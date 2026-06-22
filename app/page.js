@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { getAllGames } from "@/lib/games";
+import { fetchGames } from "@/lib/rawg";
+import Image from "next/image";
+import StarRating from "@/app/components/StarRating";
 
 const genreCards = [
   { label: "Action", icon: "⚔️", color: "from-red-800 to-red-600" },
@@ -9,20 +11,13 @@ const genreCards = [
   { label: "Sports", icon: "🏆", color: "from-orange-800 to-orange-600" },
 ];
 
-function StarRating({ rating }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <span key={s} className={s <= rating ? "text-yellow-400" : "text-gray-600"}>
-          ★
-        </span>
-      ))}
-    </div>
-  );
-}
-
-export default function HomePage() {
-  const featured = getAllGames().slice(0, 3);
+// Al agregar "async", Next.js sabe que debe resolver peticiones de datos antes de renderizar
+export default async function HomePage() {
+  // Consumimos datos reales desde el servidor de forma asíncrona
+  const allGames = await fetchGames();
+  
+  // Extraemos los primeros 3 juegos para la sección "Featured Games"
+  const featured = allGames.slice(0, 3);
 
   return (
     <div>
@@ -63,40 +58,80 @@ export default function HomePage() {
             View all →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featured.map((game) => (
-            <Link
-              key={game.id}
-              href={`/games/${game.id}`}
-              className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:scale-[1.02] glow-hover"
-            >
-              <div className={`${game.color} h-48 flex items-center justify-center`}>
-                <span className="text-6xl opacity-60">🎮</span>
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors">
-                    {game.title}
-                  </h3>
-                  <span className="shrink-0 bg-purple-900/60 text-purple-300 text-xs px-2 py-1 rounded-full border border-purple-700">
-                    {game.genre}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {game.platform.map((p) => (
-                    <span
-                      key={p}
-                      className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded"
-                    >
-                      {p}
-                    </span>
-                  ))}
-                </div>
-                <StarRating rating={game.rating} />
-              </div>
-            </Link>
-          ))}
-        </div>
+
+        {featured.length === 0 ? (
+          <p className="text-gray-400 text-center">No video games found or API configuration missing.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((game) => {
+              // Mapeo seguro de géneros desde la estructura de RAWG
+              const mainGenre = game.genres && game.genres.length > 0 
+                ? game.genres[0].name 
+                : "General";
+
+              return (
+                <Link
+                  key={game.id}
+                  href={`/games/${game.id}`}
+                  className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:scale-[1.02] glow-hover flex flex-col justify-between"
+                >
+                  {/* Imagen dinámica de RAWG optimizada */}
+                  <div className="h-48 w-full bg-gray-800 relative overflow-hidden">
+                    {game.background_image ? (
+                      <Image
+                        src={game.background_image}
+                        alt={game.name}
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={featured.indexOf(game) === 0} // Carga prioritaria para el primer juego (LCP Optimization)
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-gray-500">
+                        <span>🎮 No Image Available</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors line-clamp-1">
+                          {game.name}
+                        </h3>
+                        <span className="shrink-0 bg-purple-900/60 text-purple-300 text-xs px-2 py-1 rounded-full border border-purple-700 max-w-[100px] truncate">
+                          {mainGenre}
+                        </span>
+                      </div>
+
+                      {/* Mapeo seguro de plataformas desde el formato anidado de RAWG */}
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {game.parent_platforms?.slice(0, 3).map((p) => (
+                          <span
+                            key={p.platform.id || p.platform.name}
+                            className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded"
+                          >
+                            {p.platform.name}
+                          </span>
+                        ))}
+                        {game.parent_platforms?.length > 3 && (
+                          <span className="bg-gray-800 text-gray-500 text-xs px-1.5 py-0.5 rounded">
+                            +{game.parent_platforms.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Componente Atómico Reutilizable */}
+                    <div className="mt-2">
+                      <StarRating rating={game.rating} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Browse by Genre */}
