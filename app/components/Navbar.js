@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useFavorites } from "@/app/context/FavoritesContext";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/games", label: "Games" },
+  { href: "/favorites", label: "Favorites" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { favorites } = useFavorites();
 
   const isActive = (href) => {
     if (href === "/") return pathname === "/";
@@ -39,13 +42,20 @@ export default function Navbar() {
               <Link
                 key={href}
                 href={href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                   isActive(href)
                     ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
                     : "text-gray-300 hover:text-white hover:bg-gray-800"
                 }`}
               >
-                {label}
+                <span>{label}</span>
+                
+                {/* 🎯 BADGE REACTIVO: Si el enlace es "Favorites" y hay elementos, renderiza el globo numérico */}
+                {label === "Favorites" && favorites.length > 0 && (
+                  <span className="bg-purple-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-extrabold shadow-sm border border-purple-400/30 tracking-tight transition-all duration-300 animate-pulse">
+                    {favorites.length}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

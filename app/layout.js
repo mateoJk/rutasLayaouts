@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { FavoritesProvider } from "./context/FavoritesContext"; 
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,9 +18,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-gray-950 text-gray-100 antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {/*accesible globalmente */}
+        <FavoritesProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </FavoritesProvider>
       </body>
     </html>
   );

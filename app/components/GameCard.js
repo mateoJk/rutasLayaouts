@@ -1,24 +1,11 @@
 // SERVER COMPONENT (por defecto, sin "use client")
 // Renderiza en el servidor: no puede usar hooks ni eventos del navegador.
 // Recibe los datos ya mapeados desde RAWG y los presenta como tarjeta de juego.
- 
 import Link from "next/link";
 import Image from "next/image";
 import StarRating from "./StarRating";
- 
-/**
- * GameCard — Componente reutilizable para mostrar una tarjeta de juego.
- * Se usa en: app/page.js (Featured Games) y app/games/page.js (catálogo completo).
- *
- * Props:
- *   @param {string|number} id           - ID del juego (viene de RAWG)
- *   @param {string}        name         - Nombre del juego
- *   @param {string}        imageUrl     - URL de la imagen de portada (background_image de RAWG)
- *   @param {number}        rating       - Rating decimal (ej: 4.5)
- *   @param {string}        genre        - Género principal del juego
- *   @param {string[]}      platforms    - Array de nombres de plataformas
- *   @param {boolean}       priority     - Si true, carga la imagen con prioridad (LCP optimization)
- */
+import FavoriteButton from "./FavoriteButton"; // 🔌 Inyectamos el micro-componente cliente
+
 export default function GameCard({
   id,
   name,
@@ -31,8 +18,11 @@ export default function GameCard({
   return (
     <Link
       href={`/games/${id}`}
-      className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:scale-[1.02] flex flex-col"
+      className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:scale-[1.02] flex flex-col relative"
     >
+      {/* 🚀 Inyectamos el botón interactivo pasándole el objeto que necesita el contexto */}
+      <FavoriteButton game={{ id, name, imageUrl, rating, genre, platforms }} />
+
       {/* Imagen de portada */}
       <div className="h-48 w-full bg-gray-800 relative overflow-hidden">
         {imageUrl ? (
@@ -68,10 +58,7 @@ export default function GameCard({
         {platforms.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {platforms.slice(0, 3).map((p) => (
-              <span
-                key={p}
-                className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded"
-              >
+              <span key={p} className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded">
                 {p}
               </span>
             ))}
@@ -83,7 +70,7 @@ export default function GameCard({
           </div>
         )}
  
-        {/* Rating — usa el componente StarRating */}
+        {/* Rating */}
         <div className="mt-auto">
           <StarRating rating={rating} />
         </div>
@@ -91,4 +78,3 @@ export default function GameCard({
     </Link>
   );
 }
- 
