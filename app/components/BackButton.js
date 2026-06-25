@@ -1,11 +1,10 @@
 "use client";
 // CLIENT COMPONENT — requiere "use client" porque usa el hook useRouter.
-// Botón de "volver atrás" reutilizable que usa la historia del navegador.
+// Botón de "volver atrás" reutilizable
  
 import { useRouter } from "next/navigation";
  
 /**
- * BackButton — Botón reutilizable para navegar hacia atrás en el historial.
  * Se usa en: app/games/[id]/page.js
  *
  * Props:

@@ -53,7 +53,6 @@ export default function GameCard({
  
       {/* Info del juego */}
       <div className="p-4 flex flex-col flex-grow">
-        {/* Título + género */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors line-clamp-1">
             {name}

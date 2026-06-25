@@ -1,29 +1,27 @@
-import Link from "next/link";
-
-const filterButtons = ["All", "Action", "RPG", "Shooter", "Adventure", "Sports"];
+import GenreBarButtons from "@/app/components/GenreBarButtons";
 
 export default function GamesLayout({ children }) {
   return (
     <div>
-      {/* Genre filter bar */}
-      <div className="bg-gray-900 border-b border-gray-800 sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            <span className="text-gray-400 text-sm font-medium shrink-0 mr-1">
-              Genre:
+      {/* BARRA DEL LAYOUT ANIDADO */}
+      <div className="bg-gray-950/80 backdrop-blur-md border-b border-gray-900 sticky top-16 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 relative">
+          
+          <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-purple-600/30 scrollbar-track-transparent">
+            <span className="text-gray-500 text-xs font-bold uppercase tracking-wider shrink-0 mr-2 border-r border-gray-800 pr-3">
+              Genre
             </span>
-            {filterButtons.map((genre) => (
-              <Link
-                key={genre}
-                href="/games"
-                className="shrink-0 px-4 py-1.5 rounded-full text-sm font-medium border border-gray-700 text-gray-300 hover:border-purple-500 hover:text-purple-300 hover:bg-purple-900/20 transition-all duration-200"
-              >
-                {genre}
-              </Link>
-            ))}
+            
+            {/* Delegamos los botones al componente interactivo */}
+            <GenreBarButtons />
           </div>
+
+          {/* Sutil difuminado a la derecha solo para móviles */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none md:hidden" />
         </div>
       </div>
+
+      {/* Contenido de las páginas hijas (/games, /games/[id], /games/featured) */}
       {children}
     </div>
   );
