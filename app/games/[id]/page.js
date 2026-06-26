@@ -1,13 +1,12 @@
 // SERVER COMPONENT (por defecto, sin "use client")
 // Página de detalle de un juego individual.
-// Aca remplazamos la función mock getGameById() por fetchGameDetails() de la API real de RAWG.
 
 import { fetchGameDetails } from "@/lib/rawg";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import StarRating from "@/app/components/StarRating";
 import BackButton from "@/app/components/BackButton";
+import FavoriteButton from "@/app/components/FavoriteButton";
 
 // Metadatos dinámicos: se generan con los datos reales del juego
 export async function generateMetadata({ params }) {
@@ -23,24 +22,13 @@ export async function generateMetadata({ params }) {
 export default async function GameDetailPage({ params }) {
   const { id } = await params;
 
-  // Llamamos a la API real de RAWG en lugar del mock local
+  // Llamamos a la API real de RAWG
   const game = await fetchGameDetails(id);
 
   // Si la API devuelve null (juego no encontrado o error), mostramos 404
   if (!game) notFound();
 
   // ─── Mapeo de campos de RAWG ───────────────────────────────────────────────
-  // RAWG usa nombres distintos a los del mock original:
-  //   game.name            (antes: game.title)
-  //   game.background_image (antes: game.color — era un placeholder de color)
-  //   game.description_raw  (antes: game.description — RAWG tiene HTML en description)
-  //   game.rating           (igual, pero es decimal: ej 4.48)
-  //   game.released         (antes: game.releaseYear — ahora es fecha completa: "2011-11-18")
-  //   game.developers[].name (antes: game.developer)
-  //   game.genres[].name    (antes: game.genre)
-  //   game.parent_platforms[].platform.name (antes: game.platform[])
-  // ──────────────────────────────────────────────────────────────────────────
-
   const mainGenre = game.genres?.[0]?.name || "General";
   const developer = game.developers?.[0]?.name || "Unknown Developer";
   const releaseYear = game.released ? game.released.split("-")[0] : "N/A";
@@ -88,11 +76,28 @@ export default async function GameDetailPage({ params }) {
         </div>
 
         <div className="p-6 sm:p-8">
-          {/* Título y rating */}
+          {/* Título, botón de favoritos y rating */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
-            <h1 className="text-4xl font-extrabold text-white">{game.name}</h1>
+            <div className="flex items-center gap-4">
+              <h1 className="text-4xl font-extrabold text-white">{game.name}</h1>
+              
+              {/* El botón interactivo de favoritos convive dentro del Server Component.
+                  Le pasamos los datos normalizados exactamente igual a como los mapea la GameCard */}
+              <div className="relative w-10 h-10 shrink-0">
+                <FavoriteButton 
+                  game={{ 
+                    id: game.id, 
+                    name: game.name, 
+                    imageUrl: game.background_image, 
+                    rating: game.rating, 
+                    genre: mainGenre, 
+                    platforms 
+                  }} 
+                />
+              </div>
+            </div>
+
             <div className="flex flex-col items-start sm:items-end gap-1">
-              {/* StarRating es un Server Component reutilizable */}
               <StarRating rating={game.rating} />
               <span className="text-gray-400 text-sm">{game.rating?.toFixed(1)} / 5</span>
             </div>
@@ -114,12 +119,11 @@ export default async function GameDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Descripción — RAWG tiene description (HTML) y description_raw (texto plano).
-              Usamos description_raw para evitar inyectar HTML sin sanitizar. */}
+          {/* Descripción */}
           <div>
             <h2 className="text-xl font-bold text-white mb-3">About this game</h2>
             {game.description_raw ? (
-              <p className="text-gray-300 leading-relaxed text-lg">
+              <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
                 {game.description_raw}
               </p>
             ) : (

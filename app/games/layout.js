@@ -16,7 +16,7 @@ export default function GamesLayout({ children }) {
             <GenreBarButtons />
           </div>
 
-          {/* Sutil difuminado a la derecha solo para móviles */}
+          {/* difuminado a la derecha solo para móviles */}
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none md:hidden" />
         </div>
       </div>

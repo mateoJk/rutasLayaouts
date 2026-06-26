@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import StarRating from "./StarRating";
-import FavoriteButton from "./FavoriteButton"; // 🔌 Inyectamos el micro-componente cliente
+import FavoriteButton from "./FavoriteButton";
 
 export default function GameCard({
   id,
@@ -20,7 +20,7 @@ export default function GameCard({
       href={`/games/${id}`}
       className="group bg-gray-900 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500 transition-all duration-300 hover:scale-[1.02] flex flex-col relative"
     >
-      {/* 🚀 Inyectamos el botón interactivo pasándole el objeto que necesita el contexto */}
+      {/*Inyectamos el botón interactivo pasándole el objeto que necesita el contexto */}
       <FavoriteButton game={{ id, name, imageUrl, rating, genre, platforms }} />
 
       {/* Imagen de portada */}

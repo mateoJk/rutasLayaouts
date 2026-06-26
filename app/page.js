@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { fetchGames } from "@/lib/rawg";
-import GameCard from "@/app/components/GameCard"; // 👑 Importamos el componente reutilizable
+import GameCard from "@/app/components/GameCard"; 
 
 export default async function HomePage() {
   // Consumimos datos reales desde el servidor de forma asíncrona (Server Component)
   const allGames = await fetchGames();
   
-  // Extraemos los primeros 3 juegos para la sección "Featured Games"
   const featured = allGames.slice(0, 3);
 
   return (
@@ -64,7 +63,7 @@ export default async function HomePage() {
                 : [];
 
               return (
-                // 🛠️ Reutilización Real de Componentes (Requisito fundamental de la cátedra)
+                // Reutilización Real de Componentes
                 <GameCard
                   key={game.id}
                   id={game.id}
@@ -73,7 +72,7 @@ export default async function HomePage() {
                   rating={game.rating}
                   genre={mainGenre}
                   platforms={platformNames}
-                  priority={index === 0} // Mantenemos la optimización avanzada de LCP
+                  priority={index === 0} // precarga imagen LCP
                 />
               );
             })}

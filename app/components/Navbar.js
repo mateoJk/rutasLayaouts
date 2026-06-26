@@ -50,7 +50,7 @@ export default function Navbar() {
               >
                 <span>{label}</span>
                 
-                {/* 🎯 BADGE REACTIVO: Si el enlace es "Favorites" y hay elementos, renderiza el globo numérico */}
+                {/* BADGE REACTIVO: Si el enlace es "Favorites" y hay elementos, renderiza el globo numérico */}
                 {label === "Favorites" && favorites.length > 0 && (
                   <span className="bg-purple-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-extrabold shadow-sm border border-purple-400/30 tracking-tight transition-all duration-300 animate-pulse">
                     {favorites.length}

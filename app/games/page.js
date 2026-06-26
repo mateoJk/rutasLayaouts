@@ -9,7 +9,7 @@ export const metadata = {
 export default async function GamesPage({ searchParams }) {
   const rawGames = await fetchGames();
   
-  // Extraemos de forma segura el parámetro de género de la URL
+  // Extraemos parámetro de género de la URL
   const currentGenre = (await searchParams)?.genre || null;
 
   // Normalizamos las propiedades que vienen desde la API de RAWG
