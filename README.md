@@ -52,8 +52,10 @@ NEXT_PUBLIC_RAWG_API_KEY=tu_api_key_aqui
 ```
 
 ### 4. Levantar el Servidor de Desarrollo
-Una vez configurado todo el entorno, ejecutá el compilador en tiempo real de Next.js:
-'npm run dev' en consola
+Una vez configurado todo el entorno, ejecutá el compilador en tiempo real de Next.js en consola:
+```bash
+'npm run dev'
+```
 Abrí tu navegador web e ingresá a: http://localhost:3000
 
 
